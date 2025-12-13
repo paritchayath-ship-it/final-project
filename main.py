@@ -84,22 +84,24 @@ class SelectionPage(tk.Frame):
             self.btn_next.config(text=f"Select {3 - len(SELECTED_COINS)} more")
         return True
 
-
 class HomePage(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent, bg=COLORS["bg_main"])
         
         h = Header(self, show_time=True)
-        h.pack(fill="x", padx=40, pady=(15, 0))
+        h.pack(fill="x", padx=40, pady=(50, 5))
 
-        tk.Label(self, text="Portfolio Overview", font=FONTS["h1"], 
-                 fg=COLORS["text_dark"], bg=COLORS["bg_main"]).pack(pady=(0, 10), anchor="center")
+        self.center_wrapper = tk.Frame(self, bg=COLORS["bg_main"])
+        self.center_wrapper.pack(expand=True, fill="both")
+
+        tk.Label(self.center_wrapper, text="Portfolio Overview", font=FONTS["h1"], 
+                 fg=COLORS["text_dark"], bg=COLORS["bg_main"]).pack(pady=(50, 15), anchor="center")
         
-        self.graph = PulseGraph(self, width=950, height=340) 
-        self.graph.pack(pady=(0, 5))
+        self.graph = PulseGraph(self.center_wrapper, width=950, height=380) 
+        self.graph.pack(pady=(0, 15))
         
-        self.stats_container = tk.Frame(self, bg=COLORS["bg_main"])
-        self.stats_container.pack(fill="x", padx=40, pady=(20, 0)) 
+        self.stats_container = tk.Frame(self.center_wrapper, bg=COLORS["bg_main"])
+        self.stats_container.pack(fill="x", padx=40, pady=(15, 0)) 
         
         self.stats_container.columnconfigure(0, weight=1)
         self.stats_container.columnconfigure(1, weight=1)
@@ -129,7 +131,7 @@ class HomePage(tk.Frame):
 
         self.lbl_last_update = tk.Label(self, text="Loading data...", font=FONTS["small"], 
                                         bg=COLORS["bg_main"], fg=COLORS["text_light"])
-        self.lbl_last_update.pack(side="bottom", pady=(5, 15))
+        self.lbl_last_update.pack(side="bottom", pady=20)
 
         threading.Thread(target=self.load_data, daemon=True).start()
 
@@ -205,10 +207,8 @@ class ProDetailPage(tk.Frame):
         sym_frame.pack(side="left")
         
         base_asset = self.symbol_upper.replace("USDT", "")
-        
         tk.Label(sym_frame, text=base_asset, font=FONTS["h1"], 
                  bg=COLORS["bg_main"], fg=COLORS["text_dark"]).pack(side="left")
-        
         font_light = (FONTS["h1"][0], FONTS["h1"][1], "normal")
         tk.Label(sym_frame, text="USDT", font=font_light, 
                  bg=COLORS["bg_main"], fg=COLORS["text_light"]).pack(side="left", padx=(5,0))
@@ -373,7 +373,7 @@ class ProDetailPage(tk.Frame):
 class CryptoApp(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("Costra Bakery Crypto")
+        self.title("Cryptocurrency Dashboard")
         self.geometry("1200x842")
         self.configure(bg=COLORS["bg_main"])
         
