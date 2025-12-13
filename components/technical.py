@@ -44,5 +44,15 @@ class ChartPanel(tk.Frame):
             self.ax.plot([i, i], [lows[i], highs[i]], color=color, linewidth=1)
             self.ax.bar(i, abs(closes[i]-opens[i]), bottom=min(opens[i], closes[i]), 
                         color=color, width=0.6)
+
+        if len(closes) >= 7:
+            ma7 = [sum(closes[i-7:i])/7 for i in range(7, len(closes)+1)]
+            self.ax.plot(range(6, len(closes)), ma7, color= COLORS["active_bg"], linewidth=1.5, label="MA7")
+
+        if len(closes) >= 25:
+            ma25 = [sum(closes[i-25:i])/25 for i in range(25, len(closes)+1)]
+            self.ax.plot(range(24, len(closes)), ma25, color= COLORS["accent_blue"], linewidth=1.5, label="MA25")
+
+        self.ax.legend(loc='upper left', fontsize='x-small', frameon=False, labelcolor=COLORS["text_light"])
             
         self.canvas.draw()

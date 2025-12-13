@@ -62,7 +62,7 @@ class PulseGraph(tk.Canvas):
             
             self.create_text(x_pos, self.H - 20, 
                              text=data['symbol'].replace("USDT",""), 
-                             fill=COLORS["text_light"], font=FONTS["body"])
+                             fill=COLORS["text_light"], font=FONTS["body_bold"])
 
         if len(coords) > 1:
             flat_coords = [item for sublist in coords for item in sublist]
