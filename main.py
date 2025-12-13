@@ -2,6 +2,8 @@ import tkinter as tk
 import threading
 import json
 import websocket
+import os
+from PIL import Image, ImageTk
 from datetime import datetime
 
 from config import COLORS, COINS_OPTIONS, FONTS, TIMEFRAMES
@@ -203,11 +205,17 @@ class ProDetailPage(tk.Frame):
         sym_frame.pack(side="left")
         
         base_asset = self.symbol_upper.replace("USDT", "")
+        
         tk.Label(sym_frame, text=base_asset, font=FONTS["h1"], 
                  bg=COLORS["bg_main"], fg=COLORS["text_dark"]).pack(side="left")
+        
         font_light = (FONTS["h1"][0], FONTS["h1"][1], "normal")
         tk.Label(sym_frame, text="USDT", font=font_light, 
                  bg=COLORS["bg_main"], fg=COLORS["text_light"]).pack(side="left", padx=(5,0))
+
+        self.icon_image = self.load_icon(base_asset)
+        if self.icon_image:
+            tk.Label(sym_frame, image=self.icon_image, bg=COLORS["bg_main"]).pack(side="left", padx=15)
 
         price_box = tk.Frame(info_row, bg=COLORS["text_dark"], padx=15, pady=5)
         price_box.pack(side="right")
@@ -267,6 +275,18 @@ class ProDetailPage(tk.Frame):
         threading.Thread(target=self.fetch_chart, daemon=True).start()
         threading.Thread(target=self.start_ws, daemon=True).start()
         threading.Thread(target=self.update_24h_stats, daemon=True).start()
+
+    def load_icon(self, symbol):
+        try:
+            for ext in [".png", ".jpg", ".jpeg"]:
+                file_path = f"{symbol}{ext}"
+                if os.path.exists(file_path):
+                    pil_img = Image.open(file_path)
+                    pil_img = pil_img.resize((35, 35), Image.Resampling.LANCZOS)
+                    return ImageTk.PhotoImage(pil_img)
+        except Exception as e:
+            print(f"Error loading icon: {e}")
+        return None
 
     def update_layout(self):
         self.book_wrap.pack_forget()
@@ -353,8 +373,8 @@ class ProDetailPage(tk.Frame):
 class CryptoApp(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("Cryptocurrency Dashboard")
-        self.geometry("1200x840")
+        self.title("Costra Bakery Crypto")
+        self.geometry("1200x842")
         self.configure(bg=COLORS["bg_main"])
         
         self.sidebar = tk.Frame(self, bg=COLORS["card_bg"], width=90)
