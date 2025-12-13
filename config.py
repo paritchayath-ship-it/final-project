@@ -1,13 +1,14 @@
-COINS_OPTIONS = ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT", "XRPUSDT", "ADAUSDT"]
+COINS_OPTIONS = ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT", "XRPUSDT", "ADAUSDT", "DOGEUSDT", "DOTUSDT"]
 
 COLORS = {
-    "bg_main": "#F8F4E3",
-    "card_bg": "#FFFFFF",
-    "shadow": "#E0D8C0",
-    "text_dark": "#5A3E2B",
-    "text_light": "#8C7B6E",
-    "accent_blue": "#4A5C8C",
-    "accent_brown": "#A07855",
+    "bg_main": "#F8F4E3",       
+    "card_bg": "#FFFFFF",       
+    "shadow": "#E0D8C0",        
+    "text_dark": "#5A3E2B",     
+    "text_light": "#8C7B6E",    
+    "accent_blue": "#4A5C8C",   
+    "accent_brown": "#A07855",  
+    "active_bg": "#D0E0F0",
     
     "green": "#6d9760",         
     "red": "#b84040",          
@@ -15,7 +16,6 @@ COLORS = {
 }
 
 FONT_FAMILY = "Helvetica" 
-
 FONTS = {
     "h1": (FONT_FAMILY, 24, "bold"),
     "h2": (FONT_FAMILY, 18, "bold"),
@@ -26,3 +26,4 @@ FONTS = {
 }
 
 SHADOW_OFFSET = 4
+TIMEFRAMES = ["15m", "1h", "4h", "1d"]

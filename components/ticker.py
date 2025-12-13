@@ -9,16 +9,12 @@ class CryptoCard(tk.Frame):
         self.selected = False
         self.callback = select_callback
 
-        self.container, self.content = create_shadow_card(self, padx=15, pady=15)
+        self.container, self.content = create_shadow_card(self, padx=10, pady=10)
         self.container.pack(fill="both", expand=True)
 
         self.lbl_name = tk.Label(self.content, text=symbol.replace("USDT", ""), 
                                  font=FONTS["h2"], bg=COLORS["card_bg"], fg=COLORS["text_dark"])
-        self.lbl_name.pack(pady=(5, 15))
-        
-        self.select_indicator = tk.Label(self.content, text="✓", font=FONTS["h2"],
-                                         bg=COLORS["card_bg"], fg=COLORS["shadow"], bd=0)
-        self.select_indicator.place(relx=1.0, rely=0.0, x=-5, y=5, anchor="ne")
+        self.lbl_name.pack(pady=15)
 
         self.content.bind("<Button-1>", self.toggle_select)
         self.lbl_name.bind("<Button-1>", self.toggle_select)
@@ -28,10 +24,8 @@ class CryptoCard(tk.Frame):
         if success:
             self.selected = not self.selected
             if self.selected:
-                self.select_indicator.config(fg=COLORS["accent_blue"])
-                self.content.config(highlightbackground=COLORS["accent_blue"], highlightthickness=2)
+                self.content.config(highlightbackground=COLORS["accent_blue"], highlightthickness=3)
             else:
-                self.select_indicator.config(fg=COLORS["shadow"])
                 self.content.config(highlightthickness=0)
 
 class PulseGraph(tk.Canvas):
@@ -39,7 +33,7 @@ class PulseGraph(tk.Canvas):
         super().__init__(parent, width=width, height=height, bg=COLORS["bg_main"], highlightthickness=0)
         self.W = width
         self.H = height
-        self.center_y = height / 2
+        self.center_y = height / 2 - 20 
 
     def draw_graph(self, coin_data_list):
         self.delete("all")
@@ -49,30 +43,28 @@ class PulseGraph(tk.Canvas):
         if not coin_data_list: return
         
         num_points = len(coin_data_list)
-        segment_width = (self.W - 100) / num_points
+        segment_width = (self.W - 100) / max(1, num_points - 1)
         start_x = 50
-        coords = [(20, self.center_y)]
         
+        coords = []
         for i, data in enumerate(coin_data_list):
             pct = float(data['priceChangePercent'])
-            offset_y = -(pct * 5 * 2)
-            target_y = max(30, min(self.H - 30, self.center_y + offset_y))
-            x_pos = start_x + (i * segment_width) + (segment_width/2)
-            
-            coords.append((x_pos - 40, self.center_y))
+            offset_y = -(pct * 3) 
+            target_y = max(40, min(self.H - 80, self.center_y + offset_y))
+            x_pos = start_x + (i * segment_width)
             coords.append((x_pos, target_y))
-            coords.append((x_pos + 40, self.center_y))
 
             color = COLORS["green"] if pct >= 0 else COLORS["red"]
             self.create_oval(x_pos-6, target_y-6, x_pos+6, target_y+6, fill=color, outline=COLORS["white"], width=2)
             
-            self.create_text(x_pos, target_y - 25 if pct >= 0 else target_y + 25, 
+            self.create_text(x_pos, target_y - 30 if pct >= 0 else target_y + 35, 
                              text=f"{pct:+.2f}%", fill=color, font=FONTS["body_bold"])
             
-            self.create_text(x_pos, self.center_y + 30, 
-                             text=data['symbol'].replace("USDT",""), fill=COLORS["text_light"], font=FONTS["small"])
+            self.create_text(x_pos, self.H - 20, 
+                             text=data['symbol'].replace("USDT",""), 
+                             fill=COLORS["text_light"], font=FONTS["body"])
 
-        coords.append((self.W - 20, self.center_y))
-        
-        flat = [item for sublist in coords for item in sublist]
-        self.create_line(flat, fill=COLORS["accent_brown"], width=3, smooth=True, capstyle="round")
+        if len(coords) > 1:
+            flat_coords = [item for sublist in coords for item in sublist]
+            self.create_line(flat_coords, fill=COLORS["accent_brown"], width=3, 
+                             smooth=True, splinesteps=50, capstyle="round")

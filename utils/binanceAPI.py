@@ -7,10 +7,10 @@ def get_binance_ticker(symbol):
     except:
         return None
 
-def get_klines(symbol):
+def get_klines(symbol, interval="1h"):
     try:
-        url = f"https://api.binance.com/api/v3/klines?symbol={symbol}&interval=1h&limit=24"
+        url = f"https://api.binance.com/api/v3/klines?symbol={symbol}&interval={interval}&limit=40"
         data = requests.get(url, timeout=3).json()
-        return data
+        return data 
     except:
         return []
