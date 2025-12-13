@@ -1,4 +1,6 @@
 import tkinter as tk
+import os
+from PIL import Image, ImageTk
 from config import COLORS, FONTS
 from utils.UIhelpers import create_shadow_card
 
@@ -15,7 +17,7 @@ class CryptoCard(tk.Frame):
         self.lbl_name = tk.Label(self.content, text=symbol.replace("USDT", ""), 
                                  font=FONTS["h2"], bg=COLORS["card_bg"], fg=COLORS["text_dark"])
         self.lbl_name.pack(pady=15)
-
+        
         self.content.bind("<Button-1>", self.toggle_select)
         self.lbl_name.bind("<Button-1>", self.toggle_select)
 
@@ -28,12 +30,39 @@ class CryptoCard(tk.Frame):
             else:
                 self.content.config(highlightthickness=0)
 
+
 class PulseGraph(tk.Canvas):
     def __init__(self, parent, width=600, height=250):
         super().__init__(parent, width=width, height=height, bg=COLORS["bg_main"], highlightthickness=0)
         self.W = width
         self.H = height
         self.center_y = height / 2 - 20 
+        
+        self.image_cache = {} 
+
+    def get_icon(self, symbol):
+        clean_symbol = symbol.replace("USDT", "").upper()
+        
+        if clean_symbol in self.image_cache:
+            return self.image_cache[clean_symbol]
+        
+        try:
+            for ext in [".png", ".jpg", ".jpeg"]:
+                file_path = f"{clean_symbol}{ext}"
+                if os.path.exists(file_path):
+                    pil_img = Image.open(file_path)
+
+                    forced_size = (50, 50) 
+                    pil_img = pil_img.resize(forced_size, Image.Resampling.LANCZOS)
+                    
+                    tk_img = ImageTk.PhotoImage(pil_img)
+                    self.image_cache[clean_symbol] = tk_img
+                    return tk_img
+                    
+        except Exception as e:
+            print(f"Error loading icon for {clean_symbol}: {e}")
+            
+        return None
 
     def draw_graph(self, coin_data_list):
         self.delete("all")
@@ -54,17 +83,27 @@ class PulseGraph(tk.Canvas):
             x_pos = start_x + (i * segment_width)
             coords.append((x_pos, target_y))
 
-            color = COLORS["green"] if pct >= 0 else COLORS["red"]
-            self.create_oval(x_pos-6, target_y-6, x_pos+6, target_y+6, fill=color, outline=COLORS["white"], width=2)
+            symbol = data['symbol']
+            icon = self.get_icon(symbol)
+
+            if icon:
+                self.create_image(x_pos, target_y, image=icon, anchor="center")
+            else:
+                color = COLORS["green"] if pct >= 0 else COLORS["red"]
+                self.create_oval(x_pos-6, target_y-6, x_pos+6, target_y+6, 
+                                 fill=color, outline=COLORS["white"], width=2)
             
-            self.create_text(x_pos, target_y - 30 if pct >= 0 else target_y + 35, 
+            color = COLORS["green"] if pct >= 0 else COLORS["red"]
+            
+            self.create_text(x_pos, target_y - 35 if pct >= 0 else target_y + 40, 
                              text=f"{pct:+.2f}%", fill=color, font=FONTS["body_bold"])
             
             self.create_text(x_pos, self.H - 20, 
-                             text=data['symbol'].replace("USDT",""), 
+                             text=symbol.replace("USDT",""), 
                              fill=COLORS["text_light"], font=FONTS["body_bold"])
 
         if len(coords) > 1:
             flat_coords = [item for sublist in coords for item in sublist]
-            self.create_line(flat_coords, fill=COLORS["accent_brown"], width=3, 
-                             smooth=True, splinesteps=50, capstyle="round")
+            line_id = self.create_line(flat_coords, fill=COLORS["accent_brown"], width=3, 
+                                       smooth=True, splinesteps=50, capstyle="round")
+            self.tag_lower(line_id)
