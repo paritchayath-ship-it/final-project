@@ -41,11 +41,14 @@ CryptoDashboard/
 ```
 
 ## Installation
-# Clone the repository
+**Clone the repository**
 
 ```Bash
 git clone https://github.com/paritchayath-ship-it/final-project.git
 cd final_project
+```
+
+---
 
 **Install dependencies**
 You need to install the required libraries:
@@ -54,8 +57,12 @@ You need to install the required libraries:
 pip install requests matplotlib pillow websocket-client
 ```
 
+---
+
 **Add Coin Icons (Optional)**
 Place your coin icons (e.g., BTC.png, ETH.png) in the root directory or ensure the paths match the ticker.py logic to see coin logos.
+
+---
 
 **Run the App**
 
